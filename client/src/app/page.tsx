@@ -4,26 +4,31 @@ import Link from 'next/link';
 
 function Page() {
   const [message, setMessage] = useState("Loading");
-  const [people, setPeople] = useState([]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
     fetch("http://localhost:8080/api/test")
       .then((response) => response.json())
       .then((data) => {
         setMessage(data.message);
-        setPeople(data.people);
+        setItems(data["items"]);
       });
   }, []);
 
   return (
     <div>
-      <h1>
-        <Link href="/login/">Login</Link>
-      </h1>
+      <nav>
+        <p>
+          <Link href="/entry/">Edit Entry</Link>
+        </p>
+        <h3>
+          <Link href="/login/">Login</Link>
+        </h3>
+      </nav>
       <div>{message}</div>
-      {people.map((person, index) => (
-        <div key={index}>{person}</div>
-      ))}
+      {Object.keys(items).map((id) => {
+          return <li key={id}>{items[Number(id)]["name"]}</li>;
+        })}
     </div>);
 }
 
