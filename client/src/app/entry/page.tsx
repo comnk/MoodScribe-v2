@@ -14,9 +14,27 @@ export default function edit_entry() {
     const [author, setAuthor] = useState("");
     const [editorState, setEditorState] = useState<EditorState>(EditorState.createEmpty());
 
-    const onEditorStateChange = (newEditorState: EditorState): void => {
-      setEditorState(newEditorState);
-    };
+    const getQuote = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/speak', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+          alert(data.message);
+        } else {
+          alert(`Error: ${data.message}`);
+        }
+      } catch (error) {
+        console.error("Error calling text to speech API", error)
+      }
+    }
 
     useEffect(() => {
         fetch("http://localhost:8080/api/generate_quote")
@@ -40,7 +58,11 @@ export default function edit_entry() {
         wrapperClassName="wrapper-class"
         editorClassName="editor-class"
         toolbarClassName="toolbar-class"
+        toolbar={{
+          options: ['inline', 'fontSize', 'fontFamily']
+        }}
         />
+        <button onClick={getQuote}>Submit Text</button>
       </>
   );
 }
